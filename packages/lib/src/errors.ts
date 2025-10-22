@@ -12,7 +12,6 @@ function formatOperationName(request: RawRequest) {
 export abstract class ApiError extends Error {
   protected constructor(readonly request: RawRequest, message?: string) {
     super(message);
-    this.name = this.constructor.name;
   }
 }
 
@@ -49,9 +48,9 @@ export class HttpError<Data extends Record<string, any> = any> extends Error {
 function toHttpError(err: Error, {logger}: OpenApi<unknown>): HttpError {
   if (err instanceof BadRequestError) {
     return new HttpError(`Invalid request`, 400, {
-      errors: err.errors.map(({dataPath, message, keyword, params}) => ({
-        message: `${dataPath || 'Request'} ${message}`,
-        data: {keyword, dataPath, params}
+      errors: err.errors.map(({instancePath, message, keyword, params}) => ({
+        message: `${instancePath || 'Request'} ${message}`,
+        data: {keyword, instancePath, params}
       }))
     });
   }
